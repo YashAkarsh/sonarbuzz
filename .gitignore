@@ -1,0 +1,67 @@
+# ==============================================================================
+# Core & Package Managers
+# ==============================================================================
+node_modules/
+.bundle/
+.yarn/
+dist/
+build/
+out/
+
+# ==============================================================================
+# Environment Secrets & Credentials (CRUCIAL)
+# ==============================================================================
+.env
+.env.*
+!.env.example
+*.jks
+*.p1x
+*.p12
+*.key
+*.pem
+*.keystore
+signing_key.pfx
+
+# ==============================================================================
+# React Native & Expo (Mobile)
+# ==============================================================================
+apps/mobile/.expo/
+apps/mobile/ios/Pods/
+apps/mobile/ios/build/
+apps/mobile/android/app/build/
+apps/mobile/android/.gradle/
+apps/mobile/android/build/
+*.eas-bundle-*
+
+# ==============================================================================
+# Tauri & Rust (Linux / Web)
+# ==============================================================================
+apps/web-tauri/src-tauri/target/
+apps/web-tauri/dist/
+
+# ==============================================================================
+# React Native Windows & macOS (Desktop Native)
+# ==============================================================================
+# Windows native build outputs
+apps/desktop-native/windows/x64/
+apps/desktop-native/windows/ARM64/
+apps/desktop-native/windows/Release/
+apps/desktop-native/windows/Debug/
+apps/desktop-native/windows/.vs/
+
+# macOS native build outputs
+apps/desktop-native/macos/macos/build/
+apps/desktop-native/macos/macos/Pods/
+apps/desktop-native/macos/macos/.generated/
+
+# ==============================================================================
+# Operating Systems & Editors
+# ==============================================================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

@@ -1,0 +1,14 @@
+{
+  "name": "zylon-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start:mobile": "bun --cwd apps/mobile start",
+    "start:web": "bun --cwd apps/web-tauri start",
+    "start:tui": "bun --cwd apps/tui start",
+    "build:windows": "bun --cwd apps/desktop-native build:windows"
+  }
+}

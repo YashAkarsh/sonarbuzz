@@ -1,0 +1,11 @@
+{
+  "name": "desktop-native",
+  "version": "1.0.0",
+  "dependencies": {
+    "shared": "workspace:*",
+    "react": "18.2.0",
+    "react-native": "0.74.x",
+    "react-native-windows": "0.74.x",
+    "react-native-macos": "0.74.x"
+  }
+}
