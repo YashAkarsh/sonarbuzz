@@ -1,11 +1,13 @@
 import { create } from 'zustand';
+import { audioEngine } from '../services/audioEngine';
+import { useLocalStore } from '../services/database';
 
 export interface Track {
   id: string;
   title: string;
   artist: string;
   artworkUrl?: string;
-  streamUrl: string;
+  // streamUrl is resolved on the fly in audioEngine
 }
 
 export interface PlaybackState {
@@ -25,19 +27,36 @@ export interface AudioController {
 
 export type AudioStore = PlaybackState & AudioController;
 
-export const useAudioStore = create<AudioStore>((set) => ({
+export const useAudioStore = create<AudioStore>((set, get) => ({
   isPlaying: false,
   currentTrack: null,
   progress: 0,
   queue: [],
-  playTrack: (track) => set({ currentTrack: track, isPlaying: true }),
-  skipNext: () => set((state) => {
-    // Mock logic for skipNext
-    return { currentTrack: state.queue[0] || null };
-  }),
-  toggleFavorite: (trackId) => {
-    // Mock logic for toggleFavorite
+  playTrack: async (track) => {
+    set({ currentTrack: track, isPlaying: true });
+    await audioEngine.play(track.id);
   },
-  pause: () => set({ isPlaying: false }),
-  resume: () => set({ isPlaying: true })
+  skipNext: () => {
+    const { queue, currentTrack } = get();
+    const currentIndex = queue.findIndex(t => t.id === currentTrack?.id);
+    const nextTrack = queue[currentIndex + 1] || queue[0];
+    if (nextTrack) {
+      get().playTrack(nextTrack);
+    }
+  },
+  toggleFavorite: (trackId) => {
+    const { toggleFavorite } = useLocalStore.getState();
+    toggleFavorite(trackId);
+  },
+  pause: () => {
+    audioEngine.pause();
+    set({ isPlaying: false });
+  },
+  resume: () => {
+    const { currentTrack } = get();
+    if (currentTrack) {
+      audioEngine.play(currentTrack.id);
+      set({ isPlaying: true });
+    }
+  }
 }));

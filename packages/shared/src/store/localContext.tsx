@@ -1,2 +1,5 @@
-// Manages playlists, albums, favorites
-export const useLocalContext = () => {};
+import { useLocalStore } from '../services/database';
+
+export const useLocalContext = () => {
+  return useLocalStore();
+};
