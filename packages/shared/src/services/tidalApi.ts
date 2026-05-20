@@ -50,7 +50,7 @@ class TidalAPI {
     endpoint: string,
     version: 'v1' | 'v2' = 'v1',
     params: Record<string, string | number> = {}
-  ) {
+  ): Promise<any> {
     const token = await this.getValidToken();
     const baseUrl = version === 'v1' ? this.baseUrlV1 : this.baseUrlV2;
     
@@ -64,6 +64,7 @@ class TidalAPI {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'User-Agent': 'TIDAL/2.44.1 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36',
       },
     });
 
@@ -101,8 +102,7 @@ class TidalAPI {
   }
 
   /**
-   * Resolves the direct playback URL.
-   * Handles both direct URLs and Base64-encoded manifests.
+   * Resolves the direct playback URL and Replay Gain metadata.
    * @param quality - Use 'HI_RES_LOSSLESS' for 24-bit quality (requires compatible Client ID).
    */
   async getStreamUrl(id: string, quality: AudioQuality = 'HI_RES_LOSSLESS') {
@@ -112,12 +112,17 @@ class TidalAPI {
       assetpresentation: 'FULL',
     });
 
+    const replayGain = {
+      gain: data.trackReplayGain || 0,
+      peak: data.trackPeakAmplitude || 1,
+    };
+
     if (data.url || data.streamUrl) {
-      return data.url || data.streamUrl;
+      return { url: data.url || data.streamUrl, replayGain };
     }
 
     if (data.manifest) {
-      return this.extractStreamUrlFromManifest(data.manifest);
+      return { url: this.extractStreamUrlFromManifest(data.manifest), replayGain };
     }
 
     throw new Error('Could not resolve stream URL from Tidal response');
@@ -166,6 +171,31 @@ class TidalAPI {
 
   async getPlaylistTracks(id: string) {
     return this.fetchTidal(`/playlists/${id}/tracks`);
+  }
+
+  async getRecommendations(id: string) {
+    return this.fetchTidal(`/tracks/${id}/recommendations`);
+  }
+
+  async getMixes() {
+    // Fetches the user's home page mixes
+    return this.fetchTidal('/pages/mymusic', 'v1', {
+      deviceType: 'BROWSER',
+    });
+  }
+
+  /**
+   * Transforms raw Tidal track data into the format used by useAudioStore.
+   */
+  mapTrack(raw: any) {
+    return {
+      id: raw.id.toString(),
+      title: raw.title,
+      artist: raw.artists?.[0]?.name || raw.artist?.name || 'Unknown Artist',
+      artworkUrl: raw.album ? this.getCoverUrl(raw.album.cover || raw.album.id) : undefined,
+      duration: raw.duration,
+      isrc: raw.isrc,
+    };
   }
 }
 

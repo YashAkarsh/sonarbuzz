@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
+// Audio quality presets
+export type AudioQuality = 'LOW' | 'MEDIUM' | 'HIGH' | 'HI_RES_LOSSLESS';
+
 // Simple AsyncStorage mock for web/persistence
 const storageShim = typeof window !== 'undefined' ? window.localStorage : {
   getItem: () => null,
@@ -21,6 +24,11 @@ export interface LocalData {
   playlists: Playlist[];
   savedAlbums: string[]; // Album IDs
   recentSearches: string[];
+  listeningHistory: string[]; // Track IDs
+  settings: {
+    streamingQuality: AudioQuality;
+    downloadQuality: AudioQuality;
+  };
 }
 
 interface LocalStore extends LocalData {
@@ -40,6 +48,11 @@ interface LocalStore extends LocalData {
 
   // History
   addRecentSearch: (query: string) => void;
+  addToHistory: (trackId: string) => void;
+  clearHistory: () => void;
+
+  // Settings
+  setQuality: (type: 'streaming' | 'download', quality: AudioQuality) => void;
 }
 
 export const useLocalStore = create<LocalStore>()(
@@ -49,6 +62,11 @@ export const useLocalStore = create<LocalStore>()(
       playlists: [],
       savedAlbums: [],
       recentSearches: [],
+      listeningHistory: [],
+      settings: {
+        streamingQuality: 'HI_RES_LOSSLESS',
+        downloadQuality: 'HI_RES_LOSSLESS',
+      },
 
       toggleFavorite: (id) => set((state) => ({
         favorites: state.favorites.includes(id)
@@ -99,6 +117,19 @@ export const useLocalStore = create<LocalStore>()(
 
       addRecentSearch: (query) => set((state) => ({
         recentSearches: [query, ...state.recentSearches.filter(s => s !== query)].slice(0, 20)
+      })),
+
+      addToHistory: (trackId) => set((state) => ({
+        listeningHistory: [trackId, ...state.listeningHistory.filter(id => id !== trackId)].slice(0, 50)
+      })),
+
+      clearHistory: () => set({ listeningHistory: [] }),
+
+      setQuality: (type, quality) => set((state) => ({
+        settings: {
+          ...state.settings,
+          [type === 'streaming' ? 'streamingQuality' : 'downloadQuality']: quality
+        }
       })),
     }),
     {
