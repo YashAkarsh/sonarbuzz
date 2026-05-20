@@ -28,6 +28,13 @@ export interface LocalData {
   settings: {
     streamingQuality: AudioQuality;
     downloadQuality: AudioQuality;
+    theme: 'light' | 'dark' | 'system';
+    lastfmSession: { key: string; name: string } | null;
+    playback: {
+      gapless: boolean;
+      crossfade: number; // in seconds
+      showExplicit: boolean;
+    };
   };
 }
 
@@ -53,6 +60,9 @@ interface LocalStore extends LocalData {
 
   // Settings
   setQuality: (type: 'streaming' | 'download', quality: AudioQuality) => void;
+  setTheme: (theme: 'light' | 'dark' | 'system') => void;
+  setLastfmSession: (session: { key: string; name: string } | null) => void;
+  updatePlaybackSettings: (settings: Partial<LocalData['settings']['playback']>) => void;
 }
 
 export const useLocalStore = create<LocalStore>()(
@@ -66,6 +76,13 @@ export const useLocalStore = create<LocalStore>()(
       settings: {
         streamingQuality: 'HI_RES_LOSSLESS',
         downloadQuality: 'HI_RES_LOSSLESS',
+        theme: 'system',
+        lastfmSession: null,
+        playback: {
+          gapless: true,
+          crossfade: 0,
+          showExplicit: true,
+        },
       },
 
       toggleFavorite: (id) => set((state) => ({
@@ -129,6 +146,21 @@ export const useLocalStore = create<LocalStore>()(
         settings: {
           ...state.settings,
           [type === 'streaming' ? 'streamingQuality' : 'downloadQuality']: quality
+        }
+      })),
+
+      setTheme: (theme) => set((state) => ({
+        settings: { ...state.settings, theme }
+      })),
+
+      setLastfmSession: (lastfmSession) => set((state) => ({
+        settings: { ...state.settings, lastfmSession }
+      })),
+
+      updatePlaybackSettings: (playbackSettings) => set((state) => ({
+        settings: {
+          ...state.settings,
+          playback: { ...state.settings.playback, ...playbackSettings }
         }
       })),
     }),

@@ -21,6 +21,10 @@ Persistent user data, favorites, playlists, and offline music management.
 Synced lyrics via LRCLIB and enriched recording data via MusicBrainz.
 *   **Services**: `lyricsService`, `metadataService`
 
+### 5. [Settings & Last.fm](SETTINGS_LASTFM.md)
+User preferences, audio quality settings, and scrobbling integration.
+*   **Service**: `lastfmService`
+
 ---
 
 ## 🛠 Project Structure Reference
