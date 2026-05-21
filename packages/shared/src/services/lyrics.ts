@@ -11,7 +11,7 @@ export interface SyncedLyrics {
 }
 
 class LyricsService {
-  private baseUrl = 'https://lrclib.net/api';
+  private baseUrl = 'https://lrclib.net/api/get';
 
   async getLyrics(title: string, artist: string, album?: string, duration?: number): Promise<SyncedLyrics | null> {
     try {

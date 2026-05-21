@@ -40,8 +40,9 @@ export const useOfflineStore = create<OfflineStore>()(
           if (Platform.OS === 'web') {
             // Web: Mocking persistence for browser targets
             console.log(`[OfflineManager] Web download mocked for ${trackId}`);
+            const localUri = typeof streamUrl === 'string' ? streamUrl : streamUrl.url;
             set((state) => ({
-              downloadedTracks: { ...state.downloadedTracks, [trackId]: streamUrl },
+              downloadedTracks: { ...state.downloadedTracks, [trackId]: localUri },
             }));
           } else {
             // NATIVE IMPLEMENTATION

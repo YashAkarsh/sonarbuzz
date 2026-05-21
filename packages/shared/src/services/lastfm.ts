@@ -3,8 +3,8 @@ import { useLocalStore } from './database';
 import { Track } from '../store/audioContext';
 
 class LastFMService {
-  private API_KEY = '85214f5abbc730e78770f27784b9bdf7'; // Standard community key
-  private API_SECRET = '2c2c37fd86739191860db810dd063292';
+  private API_KEY = 'f462b4586d91c4ed6e23cabb5fbcb7c1';
+  private API_SECRET = '5ea42b6b0605a9537ca0d860194b3af1';
   private API_URL = 'https://ws.audioscrobbler.com/2.0/';
 
   private generateSignature(params: Record<string, string>): string {
